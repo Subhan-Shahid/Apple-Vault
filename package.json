@@ -1,0 +1,94 @@
+{
+  "name": "mobile-shop-management-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "node scripts/start-dev.cjs",
+    "dev:web": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "dev:electron": "concurrently -k \"npm:dev\" \"wait-on http://localhost:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .\"",
+    "build:electron": "npm run build && electron-builder -w",
+    "pack:electron": "npm run build && electron-builder --dir -w",
+    "dist": "npm run build:electron",
+    "license:gen": "node scripts/generate-license.cjs",
+    "rebuild": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.3",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "debug": "^4.4.3",
+    "firebase": "^12.19.0",
+    "lucide-react": "^0.471.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^6.9.0",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "rxjs": "^7.8.2",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
+    "electron": "^32.1.2",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.5.6",
+    "start-server-and-test": "^2.0.5",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.1",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.example.mobileshop",
+    "productName": "Mobile Shop Management",
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**/*.dll",
+      "**/*.node"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "extraFiles": [
+      {
+        "from": "node_modules/electron/dist/ffmpeg.dll",
+        "to": "./",
+        "filter": [
+          "ffmpeg.dll"
+        ]
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Mobile Shop Management"
+    }
+  }
+}
