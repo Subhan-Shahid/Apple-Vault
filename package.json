@@ -14,7 +14,7 @@
     "dist": "npm run build:electron",
     "license:gen": "node scripts/generate-license.cjs",
     "rebuild": "electron-builder install-app-deps",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "node -e \"if(!process.env.ELECTRON_SKIP_BINARY_DOWNLOAD && !process.env.CI && !process.env.VERCEL){require('child_process').execSync('electron-builder install-app-deps',{stdio:'inherit'})}\""
   },
   "dependencies": {
     "chart.js": "^4.4.3",

@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --ignore-scripts",
+  "framework": "vite",
+  "env": {
+    "ELECTRON_SKIP_BINARY_DOWNLOAD": "1"
+  }
+}
