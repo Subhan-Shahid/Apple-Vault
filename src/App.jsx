@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import Sidebar from './components/layout/Sidebar'
-import Topbar from './components/layout/Topbar'
+import AppHeader from './components/layout/AppHeader'
+import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
 import Returns from './pages/Returns'
 import CustomerHistory from './pages/CustomerHistory'
@@ -24,7 +24,7 @@ import CloudSyncManager from './components/common/CloudSyncManager'
 
 function App() {
   const { ui, currentUser, toggleSidebar } = useStore()
-  const isCashier = !!currentUser && String(currentUser.role||'').toLowerCase() === 'cashier'
+  const isCashier = !!currentUser && String(currentUser.role || '').toLowerCase() === 'cashier'
   const isElectron = !!window.api?.isElectron
   const [license, setLicense] = useState(isElectron ? null : { activated: true })
   const isDark = ui?.darkMode
@@ -37,13 +37,6 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [isDark])
-
-  // On small mobile screens, ensure sidebar starts closed
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      useStore.getState().setSidebarOpen(false)
-    }
-  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -62,54 +55,45 @@ function App() {
     return () => { mounted = false }
   }, [isElectron])
 
-  if (isElectron && (license === null)) {
+  if (isElectron && license === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600 dark:text-gray-400">Checking license…</div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-400 text-sm">
+        Checking license…
+      </div>
     )
   }
 
   if (isElectron && license && !license.activated) {
     return (
-      <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900">
-        <div className="flex-1 flex flex-col min-w-0">
-          <main className="p-0 m-0 w-full min-w-0">
-            <Routes>
-              <Route path="/activate" element={<Activate />} />
-              <Route path="*" element={<Navigate to="/activate" replace />} />
-            </Routes>
-          </main>
-        </div>
+      <div className="app-shell">
+        <Routes>
+          <Route path="/activate" element={<Activate />} />
+          <Route path="*" element={<Navigate to="/activate" replace />} />
+        </Routes>
       </div>
     )
   }
+
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900">
+      <div className="app-shell">
         <CloudSyncManager />
-        <div className="flex-1 flex flex-col min-w-0">
-          <main className="p-0 m-0 w-full min-w-0">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          </main>
-        </div>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </div>
     )
   }
+
   return (
-    <div className={`min-h-screen flex bg-gray-50 dark:bg-slate-900 overflow-x-hidden transition-colors duration-300`}>
+    <div className="app-shell overflow-x-hidden">
       <CloudSyncManager />
-      <Sidebar />
-      {ui?.sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 md:hidden animate-fade-in"
-          onClick={() => toggleSidebar()}
-        />
-      )}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar />
-        <main className={`p-3 sm:p-5 md:p-6 lg:p-8 mx-auto w-full ${ui?.sidebarOpen ? 'max-w-[1200px]' : 'max-w-none'} min-w-0 transition-all duration-300`}>
+      <AppHeader />
+
+      {/* Scrollable page content */}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="w-full max-w-md mx-auto px-3 py-3 min-h-full overflow-x-hidden">
           <Routes>
             {isCashier ? (
               <>
@@ -129,7 +113,6 @@ function App() {
                 <Route path="/sales-history" element={<SalesHistory />} />
                 <Route path="/customers" element={<CustomerHistory />} />
                 <Route path="/reports" element={<Reports />} />
-                {/* More Options Routes */}
                 <Route path="/purchase-history" element={<PurchaseHistory />} />
                 <Route path="/returns" element={<Returns />} />
                 <Route path="/suppliers" element={<Suppliers />} />
@@ -142,11 +125,13 @@ function App() {
               </>
             )}
           </Routes>
-        </main>
-      </div>
+        </div>
+      </main>
+
+      {/* Bottom navigation bar (replaces sidebar) */}
+      {isCashier ? null : <BottomNav />}
     </div>
   )
 }
 
 export default App
-

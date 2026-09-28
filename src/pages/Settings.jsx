@@ -289,7 +289,7 @@ export default function Settings() {
                     {copiedRule ? 'Copied!' : 'Copy Rule'}
                   </button>
                 </div>
-                <pre className="p-2.5 rounded bg-slate-900 text-slate-200 text-xs font-mono overflow-x-auto">
+                <pre className="p-2.5 rounded bg-slate-900 text-slate-200 text-xs font-mono whitespace-pre-wrap break-all">
                   {firestoreRuleText}
                 </pre>
               </div>

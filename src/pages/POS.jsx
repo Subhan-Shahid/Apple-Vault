@@ -35,7 +35,7 @@ export default function POS() {
     const q = query.trim().toLowerCase()
     const norm = (s) => String(s||'').toLowerCase().replace(/[^a-z0-9]/g, '')
     const qn = norm(q)
-    const catalog = (inventory || []).map(it => ({ id: it.id, name: it.name, price: it.purchasePrice, stock: it.totalItems, imeis: it.imeis || [], barcode: it.barcode || '', invoice: it.invoice || '' }))
+    const catalog = (inventory || []).map(it => ({ id: it.id, name: it.name, price: it.purchasePrice, stock: it.totalItems, imeis: it.imeis || [], barcode: it.barcode || '', invoice: it.invoice || '', ptaStatus: it.ptaStatus || 'PTA Approved' }))
     // Only match by NAME for listing results
     let filtered = catalog.filter(i => {
       if (!q) return true
@@ -58,7 +58,7 @@ export default function POS() {
     const qn = norm(q)
     if (!q) return
     // Build full catalog (ignore hidden filter) for exact match
-    const fullCatalog = (inventory || []).map(it => ({ id: it.id, name: it.name, price: it.purchasePrice, stock: it.totalItems, imeis: it.imeis || [], barcode: it.barcode || '', invoice: it.invoice || '' }))
+    const fullCatalog = (inventory || []).map(it => ({ id: it.id, name: it.name, price: it.purchasePrice, stock: it.totalItems, imeis: it.imeis || [], barcode: it.barcode || '', invoice: it.invoice || '', ptaStatus: it.ptaStatus || 'PTA Approved' }))
     // First: exact match by ID / barcode / invoice / IMEI
     const exact = fullCatalog.find(i => {
       const id = i.id.toLowerCase()
@@ -135,7 +135,7 @@ export default function POS() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h1 className="font-semibold">Point of Sale (POS)</h1>
-        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap no-scrollbar w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
           <button className={`btn-secondary shrink-0 ${view==='grid' ? 'ring-2 ring-brand/40' : ''}`} onClick={()=>setView('grid')}>
             <LayoutGrid size={16} /> Grid
           </button>
@@ -222,7 +222,20 @@ export default function POS() {
                 {items.map(item => (
                   <div key={item.id} className="card p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div className="flex-1">
-                      <div className="font-medium capitalize text-sm sm:text-base">{item.name}</div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-medium capitalize text-sm sm:text-base">{item.name}</span>
+                        {item.ptaStatus && (
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold border ${
+                            item.ptaStatus === 'PTA Approved'
+                              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25'
+                              : item.ptaStatus === 'FU'
+                              ? 'bg-blue-500/10 text-blue-600 border-blue-500/25'
+                              : 'bg-purple-500/10 text-purple-600 border-purple-500/25'
+                          }`}>
+                            {item.ptaStatus}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-brand font-semibold text-sm sm:text-base">PKR {Number(item.price).toLocaleString()}</div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -252,7 +265,20 @@ export default function POS() {
                   <div key={item.id} className="card p-3 sm:p-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                       <div className="flex-1">
-                        <div className="font-medium capitalize text-sm sm:text-base">{item.name}</div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-medium capitalize text-sm sm:text-base">{item.name}</span>
+                          {item.ptaStatus && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold border ${
+                              item.ptaStatus === 'PTA Approved'
+                                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25'
+                                : item.ptaStatus === 'FU'
+                                ? 'bg-blue-500/10 text-blue-600 border-blue-500/25'
+                                : 'bg-purple-500/10 text-purple-600 border-purple-500/25'
+                            }`}>
+                              {item.ptaStatus}
+                            </span>
+                          )}
+                        </div>
                         <div className="text-brand font-semibold text-sm sm:text-base">PKR {Number(item.price).toLocaleString()}</div>
                       </div>
                       <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">

@@ -311,21 +311,23 @@ export default function SalesHistory() {
       </div>
 
       <Card>
-        <div className="flex items-end gap-2 overflow-x-auto whitespace-nowrap no-scrollbar">
-          <div className="flex-1 min-w-[220px]">
-            <input className="input" placeholder="e.g. iPhone 14" value={medicine} onChange={e=>setMedicine(e.target.value)} />
+        <div className="flex flex-col gap-2.5">
+          <div>
+            <input className="input" placeholder="Search phone, bill, customer, IMEI..." value={medicine} onChange={e=>setMedicine(e.target.value)} />
           </div>
-          <div className="min-w-[160px]">
-            <DateInput
-              value={from}
-              onChange={(d)=>{ setFrom(d); setTo(d) }}
-              popperPlacement="bottom-start"
-            />
-          </div>
-          <div className="flex items-center gap-1">
-            <button className={`btn-secondary btn-sm ${kind==='all' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('all')}>All</button>
-            <button className={`btn-secondary btn-sm ${kind==='repack' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('repack')}>Repack</button>
-            <button className={`btn-secondary btn-sm ${kind==='secondhand' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('secondhand')}>Second Hand</button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+            <div>
+              <DateInput
+                value={from}
+                onChange={(d)=>{ setFrom(d); setTo(d) }}
+                popperPlacement="bottom-start"
+              />
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button className={`btn-secondary btn-sm ${kind==='all' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('all')}>All</button>
+              <button className={`btn-secondary btn-sm ${kind==='repack' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('repack')}>Repack</button>
+              <button className={`btn-secondary btn-sm ${kind==='secondhand' ? '!bg-blue-600 !text-white' : ''}`} onClick={()=>setKind('secondhand')}>Second Hand</button>
+            </div>
           </div>
         </div>
       </Card>

@@ -166,21 +166,23 @@ export default function PurchaseHistory() {
 
       <Card>
         <div className="flex flex-col gap-3">
-          <div className="flex items-end gap-2 overflow-x-auto whitespace-nowrap no-scrollbar">
-            <div className="min-w-[160px]">
-              <label className="label">From</label>
-              <DateInput value={from} onChange={setFrom} popperPlacement="bottom-start" />
+          <div className="flex flex-col gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label className="label">From</label>
+                <DateInput value={from} onChange={setFrom} popperPlacement="bottom-start" />
+              </div>
+              <div>
+                <label className="label">To</label>
+                <DateInput value={to} onChange={setTo} popperPlacement="bottom-start" />
+              </div>
             </div>
-            <div className="min-w-[160px]">
-              <label className="label">To</label>
-              <DateInput value={to} onChange={setTo} popperPlacement="bottom-start" />
-            </div>
-            <div className="flex-1 min-w-[240px]">
+            <div>
               <label className="label">Search</label>
               <input className="input" placeholder="mobile, supplier, invoice" value={q} onChange={e=>setQ(e.target.value)} />
             </div>
             {/* Type Filters (Top) */}
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex flex-wrap items-center gap-1.5">
               <button className={`btn-secondary btn-sm ${typeFilter==='secondhand' ? 'ring-2 ring-yellow-400' : ''}`} onClick={()=>setTypeFilter('secondhand')}>Second-Hand</button>
               <button className={`btn-secondary btn-sm ${typeFilter==='repack' ? 'ring-2 ring-blue-400' : ''}`} onClick={()=>setTypeFilter('repack')}>Repack</button>
               <button className={`btn-secondary btn-sm ${typeFilter==='all' ? 'ring-2 ring-brand/40' : ''}`} onClick={()=>setTypeFilter('all')}>All</button>

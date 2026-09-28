@@ -306,11 +306,11 @@ export default function CompanyReturn() {
       <Card title={`Returned to Company (${filteredReturnedRows.length})`} action={(
         <button className="btn-secondary btn-sm" onClick={onPrintReturned}>Print List</button>
       )}>
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
           <span className="text-sm text-gray-600">Filter by date:</span>
           <DateInput value={retDate} onChange={setRetDate} popperPlacement="bottom-start" />
           {retDate && <button className="btn-secondary btn-sm" onClick={()=>setRetDate('')}>Clear</button>}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex flex-wrap items-center gap-1.5">
             {returnedDates.slice(0,7).map(d => (
               <button key={d} className={`btn-secondary btn-sm ${retDate===d ? 'ring-2 ring-brand/40' : ''}`} onClick={()=>setRetDate(d)}>{d}</button>
             ))}
