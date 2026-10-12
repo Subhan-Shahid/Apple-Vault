@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import AppHeader from './components/layout/AppHeader'
 import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
@@ -17,7 +17,6 @@ import useStore from './store/useStore'
 import UserManagement from './pages/UserManagement'
 import Login from './pages/Login'
 import Expenses from './pages/Expenses'
-import Activate from './pages/Activate'
 import Retailer from './pages/Retailer'
 import CompanyReports from './pages/CompanyReports'
 import CloudSyncManager from './components/common/CloudSyncManager'
@@ -25,8 +24,6 @@ import CloudSyncManager from './components/common/CloudSyncManager'
 function App() {
   const { ui, currentUser, toggleSidebar } = useStore()
   const isCashier = !!currentUser && String(currentUser.role || '').toLowerCase() === 'cashier'
-  const isElectron = !!window.api?.isElectron
-  const [license, setLicense] = useState(isElectron ? null : { activated: true })
   const isDark = ui?.darkMode
 
   // Apply dark mode to document
@@ -37,42 +34,6 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [isDark])
-
-  useEffect(() => {
-    let mounted = true
-    async function check() {
-      if (!isElectron) return
-      try {
-        const res = await window.api.license.check()
-        if (!mounted) return
-        setLicense({ activated: !!res?.activated })
-      } catch {
-        if (!mounted) return
-        setLicense({ activated: false })
-      }
-    }
-    check()
-    return () => { mounted = false }
-  }, [isElectron])
-
-  if (isElectron && license === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-400 text-sm">
-        Checking license…
-      </div>
-    )
-  }
-
-  if (isElectron && license && !license.activated) {
-    return (
-      <div className="app-shell">
-        <Routes>
-          <Route path="/activate" element={<Activate />} />
-          <Route path="*" element={<Navigate to="/activate" replace />} />
-        </Routes>
-      </div>
-    )
-  }
 
   if (!currentUser) {
     return (

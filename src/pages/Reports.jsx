@@ -140,17 +140,17 @@ export default function Reports() {
       {/* Only show Company-wise Summary */}
 
       <Card title="Company-wise Summary" action={(
-        <div className="flex items-center gap-2">
-          <div>
-            <DateInput value={from} onChange={setFrom} popperPlacement="bottom-start" />
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="w-full sm:w-36">
+            <DateInput value={from} onChange={setFrom} placeholder="From date" popperPlacement="bottom-start" className="w-full" />
           </div>
-          <div>
-            <DateInput value={to} onChange={setTo} popperPlacement="bottom-start" />
+          <div className="w-full sm:w-36">
+            <DateInput value={to} onChange={setTo} placeholder="To date" popperPlacement="bottom-start" className="w-full" />
           </div>
-          <select className="input" value={companyFilter} onChange={e=>setCompanyFilter(e.target.value)}>
+          <select className="input flex-1 sm:flex-none" value={companyFilter} onChange={e=>setCompanyFilter(e.target.value)}>
             {companies.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          <button className="btn-primary" onClick={onPrint}><Printer size={16}/> Print List</button>
+          <button className="btn-primary shrink-0" onClick={onPrint}><Printer size={16}/> Print List</button>
         </div>
       )}>
         <Table columns={companyCols} data={filteredSummary} empty="No company data" />

@@ -19,11 +19,15 @@ export default function UserManagement() {
 
   const resetForm = () => { setEditingId(null); setUsername(''); setPassword(''); setRole('Cashier'); setError('') }
 
-  const onSave = () => {
+  const onSave = (e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    setError('')
     const uname = username.trim()
-    if (!uname || !password) { setError('Username and Password are required'); return }
+    if (!uname) { setError('Username is required'); return }
+    if (!editingId && !password) { setError('Password is required for new users'); return }
     // client-side unique validation
-    const exists = users.some(u => u.username.toLowerCase() === uname.toLowerCase() && u.id !== editingId)
+    const userList = Array.isArray(users) ? users : Object.values(users || {})
+    const exists = userList.some(u => u && u.username && u.username.toLowerCase() === uname.toLowerCase() && u.id !== editingId)
     if (exists) { setError('Username already exists'); return }
     if (editingId) {
       updateUser(editingId, { username: uname, ...(password ? { password } : {}), role })
@@ -39,26 +43,54 @@ export default function UserManagement() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="font-semibold">User Management</h1>
-        <button className="btn-primary" onClick={()=>{ resetForm(); setOpen(true) }}>Add User</button>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">User Management</h1>
+          <p className="text-xs text-gray-500 dark:text-slate-400">Manage user accounts, roles, and login access</p>
+        </div>
+        <button className="btn-primary" onClick={()=>{ resetForm(); setOpen(true) }}>+ Add User</button>
       </div>
 
       <Card title={`Users (${users.length})`}>
-        <div className="divide-y rounded border border-gray-100 bg-white">
+        <div className="divide-y divide-gray-100 dark:divide-slate-700/60 rounded-xl border border-gray-100 dark:border-slate-700/60 bg-white dark:bg-slate-850 overflow-hidden">
           {(users||[]).map(u => (
-            <div key={u.id} className="flex items-center justify-between px-3 py-2">
-              <div>
-                <button className="font-medium hover:underline text-left" onClick={()=>{ setDetailUser(u); setDetailOpen(true) }}>{u.username}</button>
-                <div className="text-xs text-gray-600">Role: {u.role}</div>
+            <div key={u.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3.5 sm:px-4 py-3 hover:bg-gray-50/60 dark:hover:bg-slate-750 transition-colors gap-2.5">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button 
+                    className="font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-left truncate block max-w-full text-sm sm:text-base" 
+                    onClick={()=>{ setDetailUser(u); setDetailOpen(true) }}
+                  >
+                    {u.username}
+                  </button>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
+                    u.role === 'Admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300' :
+                    u.role === 'Manager' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300' :
+                    u.role === 'Cashier' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' :
+                    'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                  }`}>
+                    {u.role}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="btn-secondary btn-sm" onClick={()=>onEdit(u)}>Edit</button>
-                <button className="btn-primary bg-red-600 hover:bg-red-700 btn-sm" onClick={()=>removeUser(u.id)}>Delete</button>
+              <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                <button className="btn-secondary btn-sm !px-3 !py-1.5" onClick={()=>onEdit(u)}>Edit</button>
+                <button 
+                  className="btn-sm rounded-xl px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 transition-colors" 
+                  onClick={()=>{
+                    if (window.confirm(`Are you sure you want to delete user "${u.username}"?`)) {
+                      removeUser(u.id)
+                    }
+                  }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
           {(!users || users.length === 0) && (
-            <div className="px-3 py-6 text-sm text-gray-500">No users yet.</div>
+            <div className="px-4 py-8 text-center text-sm text-gray-500 dark:text-slate-400">
+              No users yet. Click &quot;Add User&quot; above to create one.
+            </div>
           )}
         </div>
       </Card>
@@ -68,19 +100,30 @@ export default function UserManagement() {
         onClose={()=>{ setOpen(false); resetForm() }}
         title={editingId ? 'Edit User' : 'Add User'}
         footer={(
-          <>
-            <button className="btn-secondary" onClick={()=>{ setOpen(false); resetForm() }}>Cancel</button>
-            <button className="btn-primary" onClick={onSave}>{editingId ? 'Update' : 'Save'}</button>
-          </>
+          <div className="flex items-center justify-end gap-2">
+            <button type="button" className="btn-secondary" onClick={()=>{ setOpen(false); resetForm() }}>Cancel</button>
+            <button type="button" className="btn-primary" onClick={onSave}>{editingId ? 'Update User' : 'Save User'}</button>
+          </div>
         )}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="sm:col-span-2">
+        <form onSubmit={onSave} className="space-y-4">
+          <div>
             <label className="label">Username</label>
-            <input className="input" value={username} onChange={e=>setUsername(e.target.value)} placeholder="unique username" />
+            <input 
+              type="text"
+              className="input" 
+              value={username} 
+              onChange={e=>setUsername(e.target.value)} 
+              placeholder="e.g. cashier1" 
+              autoFocus
+              autoCapitalize="none"
+              autoCorrect="off"
+            />
           </div>
-          <div className="sm:col-span-2">
-            <label className="label">Password {editingId ? '(leave blank to keep unchanged)' : ''}</label>
+          <div>
+            <label className="label">
+              Password {editingId ? <span className="text-xs font-normal text-gray-500">(leave blank to keep unchanged)</span> : ''}
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -96,7 +139,6 @@ export default function UserManagement() {
                 onClick={() => setShowPassword(v => !v)}
               >
                 {showPassword ? (
-                  // Eye-off icon
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
                     <path d="M3 3l18 18" />
                     <path d="M10.584 10.587A2 2 0 0012 14a2 2 0 001.414-.586" />
@@ -104,7 +146,6 @@ export default function UserManagement() {
                     <path d="M6.18 6.18C4.26 7.45 2.97 9.03 2 12c1.2 2.4 3.6 4.8 9 4.8 1.13 0 2.16-.11 3.09-.32" />
                   </svg>
                 ) : (
-                  // Eye icon
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
                     <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
                     <circle cx="12" cy="12" r="3" />
@@ -115,12 +156,16 @@ export default function UserManagement() {
           </div>
           <div>
             <label className="label">Role</label>
-            <select className="input" value={role} onChange={e=>setRole(e.target.value)}>
+            <select className="input cursor-pointer" value={role} onChange={e=>setRole(e.target.value)}>
               {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
-        </div>
-        {error && <div className="text-sm text-red-600 mt-2">{error}</div>}
+          {error && (
+            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-xs text-red-600 dark:text-red-400 font-medium">
+              {error}
+            </div>
+          )}
+        </form>
       </Modal>
 
       {/* User Details Modal */}

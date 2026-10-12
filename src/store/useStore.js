@@ -222,16 +222,21 @@ const useStore = create(persist((set, get) => ({
   addUser: ({ username, password, role }) => set((state) => {
     const uname = String(username||'').trim()
     if (!uname || !password) return {}
-    if (state.users.some(u => u.username.toLowerCase() === uname.toLowerCase())) return {}
-    return { users: [{ id: nanoid(), username: uname, password: String(password), role: role || 'Employee' }, ...state.users] }
+    const currentUsers = Array.isArray(state.users) ? state.users : Object.values(state.users || {})
+    if (currentUsers.some(u => u && u.username && u.username.toLowerCase() === uname.toLowerCase())) return {}
+    return { users: [{ id: nanoid(), username: uname, password: String(password), role: role || 'Employee' }, ...currentUsers] }
   }),
   updateUser: (id, changes) => set((state) => {
-    const next = state.users.map(u => u.id === id ? { ...u, ...changes } : u)
-    const counts = next.reduce((m,u)=>{ const k=u.username.toLowerCase(); m[k]=(m[k]||0)+1; return m }, {})
+    const currentUsers = Array.isArray(state.users) ? state.users : Object.values(state.users || {})
+    const next = currentUsers.map(u => u.id === id ? { ...u, ...changes } : u)
+    const counts = next.reduce((m,u)=>{ const k=u?.username?.toLowerCase() || ''; m[k]=(m[k]||0)+1; return m }, {})
     if (Object.values(counts).some(c=>c>1)) return {}
     return { users: next }
   }),
-  removeUser: (id) => set((state) => ({ users: state.users.filter(u => u.id !== id) })),
+  removeUser: (id) => set((state) => {
+    const currentUsers = Array.isArray(state.users) ? state.users : Object.values(state.users || {})
+    return { users: currentUsers.filter(u => u.id !== id) }
+  }),
 
   // Auth
   login: ({ username, password }) => set((state) => {

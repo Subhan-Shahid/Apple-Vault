@@ -115,11 +115,13 @@ export default function CompanyReports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-xl font-semibold">Company-wise Reports</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Filter by Date:</span>
-          <DateInput value={selectedDate} onChange={setSelectedDate} popperPlacement="bottom-end" portalId="root" />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 shrink-0">Filter by Date:</span>
+          <div className="flex-1 sm:flex-none">
+            <DateInput value={selectedDate} onChange={setSelectedDate} popperPlacement="bottom-end" portalId="root" className="w-full sm:w-auto" />
+          </div>
         </div>
       </div>
 

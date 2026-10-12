@@ -1,21 +1,22 @@
 import { NavLink } from 'react-router-dom'
 import {
-  RotateCcw, Truck, Store, Wallet, Users, Receipt, BarChart3, X, Settings,
+  RotateCcw, Truck, Store, Wallet, Users, Receipt, BarChart3, X, Settings, ShieldCheck, Building2
 } from 'lucide-react'
 import useStore from '../../store/useStore'
 import { useEffect } from 'react'
 
 const drawerItems = [
-  { to: '/reports',         label: 'Reports',          icon: BarChart3,  color: 'text-purple-400' },
-  { to: '/customers',       label: 'Customers',        icon: Users,      color: 'text-sky-400'    },
-  { to: '/returns',         label: 'Customer Returns',  icon: RotateCcw,  color: 'text-amber-400'  },
-  { to: '/company-return',  label: 'Company Return',   icon: Truck,      color: 'text-rose-400'   },
-  { to: '/retailer',        label: 'Retailer Sales',   icon: Store,      color: 'text-emerald-400'},
-  { to: '/purchase-history',label: 'Purchase History', icon: Truck,      color: 'text-indigo-400' },
-  { to: '/expenses',        label: 'Expenses',         icon: Wallet,     color: 'text-orange-400' },
-  { to: '/suppliers',       label: 'Suppliers',        icon: Users,      color: 'text-teal-400'   },
-  { to: '/users',           label: 'User Management',  icon: Receipt,    color: 'text-pink-400'   },
-  { to: '/settings',        label: 'Settings',         icon: Settings,   color: 'text-slate-400'  },
+  { to: '/reports',         label: 'Reports',          icon: BarChart3,     color: 'text-purple-400' },
+  { to: '/company-reports', label: 'Company Reports',  icon: Building2,     color: 'text-cyan-400'   },
+  { to: '/customers',       label: 'Customers',        icon: Users,         color: 'text-sky-400'    },
+  { to: '/returns',         label: 'Customer Returns',  icon: RotateCcw,     color: 'text-amber-400'  },
+  { to: '/company-return',  label: 'Company Return',   icon: Truck,         color: 'text-rose-400'   },
+  { to: '/retailer',        label: 'Retailer Sales',   icon: Store,         color: 'text-emerald-400'},
+  { to: '/purchase-history',label: 'Purchase History', icon: Truck,         color: 'text-indigo-400' },
+  { to: '/expenses',        label: 'Expenses',         icon: Wallet,        color: 'text-orange-400' },
+  { to: '/suppliers',       label: 'Suppliers',        icon: Users,         color: 'text-teal-400'   },
+  { to: '/users',           label: 'User Management',  icon: ShieldCheck,   color: 'text-pink-400'   },
+  { to: '/settings',        label: 'Settings',         icon: Settings,      color: 'text-slate-400'  },
 ]
 
 export default function AppDrawer({ open, onClose }) {
@@ -40,7 +41,7 @@ export default function AppDrawer({ open, onClose }) {
 
       {/* Drawer panel — slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[70] flex flex-col
+        className={`fixed left-0 right-0 bottom-0 z-[70] flex flex-col mx-auto max-w-md w-full
           bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700/80 rounded-t-3xl shadow-2xl
           transition-transform duration-300 ease-out max-h-[85vh]
           ${open ? 'translate-y-0' : 'translate-y-full'}`}
@@ -99,7 +100,11 @@ export default function AppDrawer({ open, onClose }) {
         {/* Footer logout */}
         <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800 shrink-0">
           <button
-            onClick={() => { logout(); onClose(); window.location.assign('#/login') }}
+            onClick={() => { 
+              logout()
+              onClose()
+              window.location.pathname = '/login'
+            }}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl
               bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400
               hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-95 transition-all text-sm font-semibold"

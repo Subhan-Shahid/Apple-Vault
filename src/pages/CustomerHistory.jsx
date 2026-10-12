@@ -99,9 +99,9 @@ export default function CustomerHistory() {
       <h1 className="text-xl font-semibold">Customer History</h1>
 
       <Card title="Customers" action={(
-        <div className="flex items-center gap-2">
-          <input className="input" placeholder="Search by name or phone" value={q} onChange={e=>setQ(e.target.value)} />
-          <button className="btn-secondary" onClick={onPrint}>Print List</button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <input className="input flex-1 sm:w-64" placeholder="Search by name or phone" value={q} onChange={e=>setQ(e.target.value)} />
+          <button className="btn-secondary shrink-0" onClick={onPrint}>Print List</button>
         </div>
       )}>
         <Table columns={columns} data={filtered} renderActions={(row) => (

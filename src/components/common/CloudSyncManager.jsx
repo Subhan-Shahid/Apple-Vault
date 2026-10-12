@@ -23,8 +23,26 @@ export default function CloudSyncManager() {
       isReceivingRemote.current = true
       if (remoteTimer.current) clearTimeout(remoteTimer.current)
 
+      // Firebase RTDB converts arrays with custom/numeric keys into objects or maps.
+      // Ensure array-based categories remain arrays if received as objects:
+      let normalizedData = data
+      const arrayCategories = [
+        'inventory', 'sales', 'customers', 'expenses', 'returns',
+        'companyReturns', 'retailerSales', 'repairs', 'purchaseHistory',
+        'suppliers', 'users', 'colors'
+      ]
+      if (arrayCategories.includes(cat)) {
+        if (!data) {
+          normalizedData = []
+        } else if (Array.isArray(data)) {
+          normalizedData = data.filter(Boolean)
+        } else if (typeof data === 'object') {
+          normalizedData = Object.values(data).filter(Boolean)
+        }
+      }
+
       useStore.setState({ 
-        [cat]: data, 
+        [cat]: normalizedData, 
         lastSyncTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       })
 

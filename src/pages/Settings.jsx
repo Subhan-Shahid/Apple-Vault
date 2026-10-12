@@ -539,7 +539,7 @@ export default function Settings() {
             <button className="btn-secondary" onClick={() => setDeleteOpen(false)}>Cancel</button>
             <button
               className="btn-primary bg-red-600 hover:bg-red-700"
-              onClick={() => { resetAll(); setDeleteOpen(false); window.location.assign('#/login') }}
+              onClick={() => { resetAll(); setDeleteOpen(false); window.location.assign('/login') }}
             >Delete</button>
           </>
         )}

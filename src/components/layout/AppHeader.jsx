@@ -1,4 +1,4 @@
-import { Sun, Moon } from 'lucide-react'
+import { Sun, Moon, LogOut } from 'lucide-react'
 import useStore from '../../store/useStore'
 
 const syncMeta = {
@@ -9,7 +9,8 @@ const syncMeta = {
 }
 
 export default function AppHeader() {
-  const { settings, currentUser, cloudSyncStatus, ui, toggleDarkMode } = useStore()
+  const { settings, currentUser, cloudSyncStatus, ui, toggleDarkMode, logout } = useStore()
+  const isCashier = !!currentUser && String(currentUser.role || '').toLowerCase() === 'cashier'
   const meta = syncMeta[cloudSyncStatus] || syncMeta.disconnected
   const isDark = ui?.darkMode
 
@@ -46,6 +47,20 @@ export default function AppHeader() {
             />
             <span className="text-[10px] font-semibold text-gray-500 dark:text-slate-400">{meta.label}</span>
           </div>
+
+          {isCashier && (
+            <button
+              onClick={() => {
+                logout()
+                window.location.pathname = '/login'
+              }}
+              aria-label="Sign out"
+              title="Sign out"
+              className="p-2 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 active:scale-95 transition-all shadow-xs"
+            >
+              <LogOut size={15} />
+            </button>
+          )}
 
           <button
             onClick={toggleDarkMode}

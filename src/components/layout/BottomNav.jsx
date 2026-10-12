@@ -21,7 +21,7 @@ export default function BottomNav() {
   const location = useLocation()
 
   const moreRoutes = [
-    '/returns', '/company-return', '/retailer', '/purchase-history',
+    '/company-reports', '/returns', '/company-return', '/retailer', '/purchase-history',
     '/expenses', '/suppliers', '/settings', '/users', '/reports', '/customers',
   ]
   const moreActive = moreRoutes.some(r => location.pathname.startsWith(r))

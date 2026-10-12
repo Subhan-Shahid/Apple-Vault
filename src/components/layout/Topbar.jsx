@@ -81,7 +81,10 @@ export default function Topbar() {
 
         <button 
           className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400 active:scale-95 transition-all text-xs sm:text-sm font-medium shadow-xs" 
-          onClick={() => { logout(); window.location.assign('#/login') }}
+          onClick={() => { 
+            logout(); 
+            window.location.pathname = '/login'
+          }}
           title="Sign out"
         >
           <LogOut size={15} />

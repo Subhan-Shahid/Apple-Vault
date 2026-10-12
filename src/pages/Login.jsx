@@ -30,7 +30,12 @@ export default function Login() {
         setLoading(false)
         return
       }
-      navigate('/dashboard', { replace: true })
+      const role = String(after.role || '').toLowerCase()
+      if (role === 'cashier') {
+        navigate('/pos', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
     } catch (err) {
       setError('An error occurred during sign in')
       setLoading(false)
