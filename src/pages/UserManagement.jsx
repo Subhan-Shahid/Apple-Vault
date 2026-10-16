@@ -42,12 +42,12 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">User Management</h1>
           <p className="text-xs text-gray-500 dark:text-slate-400">Manage user accounts, roles, and login access</p>
         </div>
-        <button className="btn-primary" onClick={()=>{ resetForm(); setOpen(true) }}>+ Add User</button>
+        <button className="btn-primary w-full sm:w-auto shrink-0" onClick={()=>{ resetForm(); setOpen(true) }}>+ Add User</button>
       </div>
 
       <Card title={`Users (${users.length})`}>
@@ -100,10 +100,10 @@ export default function UserManagement() {
         onClose={()=>{ setOpen(false); resetForm() }}
         title={editingId ? 'Edit User' : 'Add User'}
         footer={(
-          <div className="flex items-center justify-end gap-2">
+          <>
             <button type="button" className="btn-secondary" onClick={()=>{ setOpen(false); resetForm() }}>Cancel</button>
             <button type="button" className="btn-primary" onClick={onSave}>{editingId ? 'Update User' : 'Save User'}</button>
-          </div>
+          </>
         )}
       >
         <form onSubmit={onSave} className="space-y-4">

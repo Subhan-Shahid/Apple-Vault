@@ -16,7 +16,7 @@ export default function AppHeader() {
 
   return (
     <header
-      className="shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 transition-colors"
+      className="shrink-0 bg-white dark:bg-[#0b0f14] border-b border-gray-100 dark:border-white/[0.06] transition-colors"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="w-full max-w-md mx-auto flex items-center justify-between gap-2 px-3 h-14">
@@ -24,10 +24,10 @@ export default function AppHeader() {
           <img
             src={settings?.logoDataUrl || '/apple-touch-icon.png'}
             alt="logo"
-            className="h-9 w-9 rounded-xl object-contain bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700/60 p-1"
+            className="h-9 w-9 rounded-xl object-contain bg-gray-100 dark:bg-[#141a22] border border-gray-200 dark:border-white/10 p-1"
           />
           <div className="min-w-0">
-            <p className="text-sm font-bold text-gray-900 dark:text-white truncate leading-tight">
+            <p className="text-sm font-bold text-gray-900 dark:text-slate-100 truncate leading-tight">
               {settings?.companyName || 'Apple Vault'}
             </p>
             {currentUser && (
@@ -39,7 +39,7 @@ export default function AppHeader() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700/50">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-[#141a22] border border-gray-200 dark:border-white/[0.08]">
             <span
               className={`w-1.5 h-1.5 rounded-full ${meta.dot} ${
                 cloudSyncStatus === 'connecting' ? 'animate-pulse' : ''
@@ -56,7 +56,7 @@ export default function AppHeader() {
               }}
               aria-label="Sign out"
               title="Sign out"
-              className="p-2 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 active:scale-95 transition-all shadow-xs"
+              className="p-2 rounded-lg border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/15 active:scale-95 transition-all shadow-xs"
             >
               <LogOut size={15} />
             </button>
@@ -66,7 +66,7 @@ export default function AppHeader() {
             onClick={toggleDarkMode}
             aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-95 transition-all shadow-xs"
+            className="p-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#141a22] text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-[#1a222d] active:scale-95 transition-all shadow-xs"
           >
             {isDark ? <Sun size={15} /> : <Moon size={15} />}
           </button>

@@ -21,7 +21,7 @@ export default function Table({ columns, data, renderActions, empty = 'No data' 
         {data.map((row, idx) => (
           <div
             key={row.id || idx}
-            className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/80 shadow-xs overflow-hidden"
+            className="bg-white dark:bg-[#141a22] rounded-2xl border border-gray-100 dark:border-white/[0.08] shadow-xs overflow-hidden"
           >
             {/* Card body: key-value rows */}
             <div className="p-3 space-y-1.5">
@@ -43,7 +43,7 @@ export default function Table({ columns, data, renderActions, empty = 'No data' 
 
             {/* Action buttons */}
             {renderActions && (
-              <div className="flex border-t border-gray-100 dark:border-slate-700/60 bg-gray-50/50 dark:bg-slate-900/30 px-2.5 py-2 justify-end gap-1.5">
+              <div className="flex border-t border-gray-100 dark:border-white/[0.06] bg-gray-50/50 dark:bg-[#0f141c]/60 px-2.5 py-2 justify-end gap-1.5">
                 {renderActions(row)}
               </div>
             )}
@@ -52,9 +52,9 @@ export default function Table({ columns, data, renderActions, empty = 'No data' 
       </div>
 
       {/* ── Desktop table (hidden on < sm) ───────────────────────────── */}
-      <div className="hidden sm:block rounded-xl border border-gray-200 dark:border-slate-700/80 overflow-x-auto shadow-xs bg-white dark:bg-slate-800">
-        <table className="min-w-full text-xs sm:text-sm divide-y divide-gray-100 dark:divide-slate-700/60">
-          <thead className="bg-slate-50/90 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider sticky top-0 z-0">
+      <div className="hidden sm:block rounded-xl border border-gray-200 dark:border-white/[0.08] overflow-x-auto shadow-xs bg-white dark:bg-[#141a22]">
+        <table className="min-w-full text-xs sm:text-sm divide-y divide-gray-100 dark:divide-white/[0.06]">
+          <thead className="bg-slate-50/90 dark:bg-[#0f141c] text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider sticky top-0 z-0">
             <tr>
               {columns.map(col => (
                 <th
@@ -67,11 +67,11 @@ export default function Table({ columns, data, renderActions, empty = 'No data' 
               {renderActions && <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-right font-semibold whitespace-nowrap">Actions</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-slate-700/40 bg-white dark:bg-slate-800">
+          <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06] bg-white dark:bg-[#141a22]">
             {data.map((row, idx) => (
               <tr
                 key={row.id || idx}
-                className="hover:bg-brand/5 dark:hover:bg-slate-700/50 transition-colors duration-150"
+                className="hover:bg-brand/5 dark:hover:bg-white/[0.03] transition-colors duration-150"
               >
                 {columns.map(col => (
                   <td

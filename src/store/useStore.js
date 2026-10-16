@@ -101,6 +101,60 @@ const useStore = create(persist((set, get) => ({
     }
   }),
 
+  // Delete a sale and restore stock / IMEIs where possible
+  removeSale: (id) => set((state) => {
+    const sale = (state.sales || []).find(s => s.id === id)
+    if (!sale) return {}
+
+    // Restore inventory from multi-item POS sales
+    let inventory = state.inventory.map(inv => ({ ...inv }))
+    if (Array.isArray(sale.items) && sale.items.length) {
+      for (const it of sale.items) {
+        const inv = inventory.find(i => i.id === it.id)
+        if (!inv) continue
+        const qty = Number(it.qty || 0)
+        const restoreImeis = Array.isArray(it.imeis) ? it.imeis.map(String).filter(Boolean) : []
+        const prevImeis = Array.isArray(inv.imeis) ? inv.imeis.map(String) : []
+        const merged = [...restoreImeis.filter(im => !prevImeis.includes(im)), ...prevImeis]
+        inv.imeis = merged
+        inv.totalItems = Math.max(0, Number(inv.totalItems || 0) + qty)
+      }
+    }
+
+    // Restore legacy single-mobile sales
+    let mobiles = state.mobiles
+    if (sale.mobileId) {
+      mobiles = state.mobiles.map(m => {
+        if (m.id !== sale.mobileId) return m
+        const { sale: _drop, ...rest } = m
+        return { ...rest, status: 'in_stock' }
+      })
+    }
+
+    // Drop matching purchase entry from customer history
+    const billNo = sale.billNo
+    const customers = (state.customers || []).map(c => {
+      if (!Array.isArray(c.history) || !c.history.length) return c
+      const history = c.history.filter(h => {
+        if (billNo && h.billNo === billNo) return false
+        if (h.date && sale.date && String(h.date).slice(0, 10) === String(sale.date).slice(0, 10)
+          && Number(h.total) === Number(sale.total ?? sale.price ?? 0)
+          && (c.name || '') === (sale.customer?.name || '')) {
+          return false
+        }
+        return true
+      })
+      return history.length === c.history.length ? c : { ...c, history }
+    })
+
+    return {
+      sales: state.sales.filter(s => s.id !== id),
+      inventory,
+      mobiles,
+      customers,
+    }
+  }),
+
   // Company Return: remove a list of IMEIs for a given company from inventory and record entries
   processCompanyReturn: ({ company, imeis = [], date }) => {
     const { inventory, companyReturns } = get()

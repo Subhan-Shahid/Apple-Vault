@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Calendar, Search, RefreshCw, Printer } from 'lucide-react'
+import { Printer, Trash2 } from 'lucide-react'
 import DateInput from '../components/DateInput'
 import useStore from '../store/useStore'
 import Modal from '../components/ui/Modal'
@@ -9,7 +9,7 @@ import { format } from 'date-fns'
 import { buildThermalReceiptHtml } from '../utils/posReceipt'
 
 export default function SalesHistory() {
-  const { sales, mobiles, settings, inventory, returns } = useStore()
+  const { sales, mobiles, settings, inventory, returns, removeSale } = useStore()
   const [medicine, setMedicine] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
@@ -17,6 +17,8 @@ export default function SalesHistory() {
   const [receiptOpen, setReceiptOpen] = useState(false)
   const [receiptHtml, setReceiptHtml] = useState('')
   const [frameRef, setFrameRef] = useState(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [toDelete, setToDelete] = useState(null)
 
   const rows = useMemo(() => {
     // join sales with mobiles
@@ -293,20 +295,20 @@ export default function SalesHistory() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-semibold">Sales History</h1>
+      <h1 className="font-semibold dark:text-slate-100">Sales History</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Card>
-          <div className="text-xs text-gray-500">Bills</div>
-          <div className="text-2xl font-semibold">{stats.count.toLocaleString()}</div>
+          <div className="text-xs text-gray-500 dark:text-slate-400">Bills</div>
+          <div className="text-2xl font-semibold dark:text-slate-100">{stats.count.toLocaleString()}</div>
         </Card>
         <Card>
-          <div className="text-xs text-gray-500">Total Sales (PKR)</div>
-          <div className="text-2xl font-semibold text-green-600">{stats.total.toLocaleString()}</div>
+          <div className="text-xs text-gray-500 dark:text-slate-400">Total Sales (PKR)</div>
+          <div className="text-2xl font-semibold text-green-600 dark:text-emerald-400">{stats.total.toLocaleString()}</div>
         </Card>
         <Card>
-          <div className="text-xs text-gray-500">Range</div>
-          <div className="text-sm font-medium">{stats.dateLabel}</div>
+          <div className="text-xs text-gray-500 dark:text-slate-400">Range</div>
+          <div className="text-sm font-medium dark:text-slate-200">{stats.dateLabel}</div>
         </Card>
       </div>
 
@@ -338,9 +340,19 @@ export default function SalesHistory() {
           <button className="btn-primary btn-sm" onClick={printAll}><Printer size={16}/> Print List</button>
         </div>
         <Table columns={columns} data={rows} renderActions={(row) => (
-          <button className="btn-secondary btn-sm" onClick={() => reprint(row)}><Printer size={16}/> Reprint</button>
+          <div className="flex items-center justify-end gap-1.5 flex-wrap">
+            <button className="btn-secondary btn-sm" onClick={() => reprint(row)}>
+              <Printer size={16}/> Reprint
+            </button>
+            <button
+              className="btn-sm rounded-xl px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 transition-colors"
+              onClick={() => { setToDelete(row); setConfirmOpen(true) }}
+            >
+              <Trash2 size={14}/> Delete
+            </button>
+          </div>
         )} empty="No sales found" />
-        <div className="flex items-center justify-between text-sm text-gray-600 mt-3">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-slate-400 mt-3">
           <span>Page 1 of 1</span>
           <div className="flex items-center gap-2">
             <button className="btn-secondary btn-sm" disabled>Prev</button>
@@ -348,6 +360,39 @@ export default function SalesHistory() {
           </div>
         </div>
       </Card>
+
+      <Modal
+        open={confirmOpen}
+        onClose={()=>{ setConfirmOpen(false); setToDelete(null) }}
+        title="Delete Sale"
+        footer={(
+          <>
+            <button className="btn-secondary" onClick={()=>{ setConfirmOpen(false); setToDelete(null) }}>Cancel</button>
+            <button
+              className="btn-primary bg-red-600 hover:bg-red-700"
+              onClick={()=>{
+                if (toDelete?.id) removeSale(toDelete.id)
+                setConfirmOpen(false)
+                setToDelete(null)
+              }}
+            >Delete Sale</button>
+          </>
+        )}
+      >
+        <div className="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+          <p>Delete this sale and restore its items back to inventory?</p>
+          {toDelete && (
+            <div className="p-3 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 space-y-1">
+              <div><span className="text-gray-600 dark:text-slate-400">Bill:</span> {toDelete.billNo}</div>
+              <div><span className="text-gray-600 dark:text-slate-400">Customer:</span> {toDelete.customer}</div>
+              <div><span className="text-gray-600 dark:text-slate-400">Items:</span> {toDelete.medicines}</div>
+              <div><span className="text-gray-600 dark:text-slate-400">Amount:</span> PKR {Number(toDelete.amount||0).toLocaleString()}</div>
+            </div>
+          )}
+          <p className="text-xs text-gray-500 dark:text-slate-500">This cannot be undone.</p>
+        </div>
+      </Modal>
+
       {/* In-app Receipt Preview/Print */}
       <Modal
         open={receiptOpen}

@@ -17,7 +17,12 @@ module.exports = {
           light: '#60a5fa',
           soft: '#e8f0fe',
         },
-        surface: '#ffffff',
+        surface: {
+          DEFAULT: '#ffffff',
+          dark: '#141a22',
+          raised: '#1a222d',
+          sunken: '#0f141c',
+        },
         slate: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -27,9 +32,11 @@ module.exports = {
           500: '#64748b',
           600: '#475569',
           700: '#334155',
+          750: '#273141',
           800: '#1e293b',
+          850: '#161d27',
           900: '#0f172a',
-          950: '#020617',
+          950: '#0b0f14',
         },
       },
       fontFamily: {
