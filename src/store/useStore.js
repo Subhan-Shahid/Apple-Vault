@@ -338,6 +338,14 @@ const useStore = create(persist((set, get) => ({
   updateCartProfit: (itemId, profit) => set((state) => ({
     posCart: state.posCart.map(ci => ci.id === itemId ? { ...ci, profit: Number(profit || 0) } : ci)
   })),
+  updateCartSalePrice: (itemId, salePrice) => set((state) => ({
+    posCart: state.posCart.map(ci => {
+      if (ci.id !== itemId) return ci
+      const purchasePrice = Number(ci.purchasePrice || 0)
+      const profit = Math.max(0, Number(salePrice || 0) - purchasePrice)
+      return { ...ci, profit }
+    })
+  })),
 
   // Inventory actions
   updateInventoryStock: (id, changes) => set((state) => {

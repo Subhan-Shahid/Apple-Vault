@@ -6,7 +6,7 @@ import Modal from '../components/ui/Modal'
 import { buildThermalReceiptHtml } from '../utils/posReceipt'
 
 export default function POS() {
-  const { inventory, posCart, addToCart, incrementQty, decrementQty, removeFromCart, clearCart, processCheckout, settings, updateCartProfit } = useStore()
+  const { inventory, posCart, addToCart, incrementQty, decrementQty, removeFromCart, clearCart, processCheckout, settings, updateCartProfit, updateCartSalePrice } = useStore()
   const [query, setQuery] = useState('')
   const [view, setView] = useState('grid') // 'grid' | 'list'
   // Track ids of items hidden by the user. When non-empty, the button shows 'Unhide'.
@@ -334,23 +334,41 @@ export default function POS() {
                         <button className="btn-secondary px-2 py-1" onClick={()=>removeFromCart(ci.id)}><Trash2 size={14} /></button>
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-1 border-t border-gray-100 dark:border-white/5">
+                      <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Profit:</span>
                         <button 
-                          className="text-xs text-blue-600 hover:text-blue-800"
+                          type="button"
+                          className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-medium"
                           onClick={() => updateCartProfit(ci.id, profit + 100)}
+                          title="Add PKR 100 to profit"
                         >
-                          +PKR 100
+                          +100
                         </button>
                         <button 
-                          className="text-xs text-blue-600 hover:text-blue-800"
+                          type="button"
+                          className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-medium"
                           onClick={() => updateCartProfit(ci.id, Math.max(0, profit - 100))}
+                          title="Subtract PKR 100 from profit"
                         >
-                          -PKR 100
+                          -100
                         </button>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xs sm:text-sm font-bold text-green-600">Sale: PKR {salePrice.toLocaleString()}</div>
+                      <div className="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                        <label className="text-xs font-semibold text-gray-600 dark:text-slate-300 whitespace-nowrap">Sale Price:</label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-2 text-xs font-semibold text-gray-500 pointer-events-none">PKR</span>
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-28 pl-9 pr-2 py-1 text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 bg-white dark:bg-[#0f141c] border border-gray-300 dark:border-white/20 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand text-right"
+                            value={salePrice}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? 0 : Number(e.target.value)
+                              updateCartSalePrice(ci.id, val)
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
