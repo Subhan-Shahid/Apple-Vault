@@ -5,6 +5,12 @@ import Card from '../components/ui/Card'
 import Modal from '../components/ui/Modal'
 import { buildThermalReceiptHtml } from '../utils/posReceipt'
 
+const getCartSalePrice = (item) => Number(
+  item.salePrice === '' || item.salePrice == null
+    ? Number(item.purchasePrice || 0) + Number(item.profit || 0)
+    : item.salePrice
+)
+
 export default function POS() {
   const { inventory, posCart, addToCart, incrementQty, decrementQty, removeFromCart, clearCart, processCheckout, settings, updateCartProfit, updateCartSalePrice } = useStore()
   const [query, setQuery] = useState('')
@@ -83,10 +89,7 @@ export default function POS() {
 
   const totals = useMemo(() => {
     const subtotal = posCart.reduce((a, b) => {
-      const purchasePrice = Number(b.purchasePrice || 0)
-      const profit = Number(b.profit || 0)
-      const salePrice = purchasePrice + profit
-      return a + salePrice * b.qty
+      return a + getCartSalePrice(b) * b.qty
     }, 0)
     const disc = Number(discount || 0)
     const taxable = Math.max(subtotal - disc, 0)
@@ -314,7 +317,7 @@ export default function POS() {
               {posCart.map(ci => {
                 const purchasePrice = Number(ci.purchasePrice || 0)
                 const profit = Number(ci.profit || 0)
-                const salePrice = purchasePrice + profit
+                const salePrice = ci.salePrice ?? (purchasePrice + profit)
                 return (
                   <div key={ci.id} className="border rounded-lg p-2 sm:p-3">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-2">
@@ -348,7 +351,7 @@ export default function POS() {
                         <button 
                           type="button"
                           className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400 font-medium"
-                          onClick={() => updateCartProfit(ci.id, Math.max(0, profit - 100))}
+                          onClick={() => updateCartProfit(ci.id, profit - 100)}
                           title="Subtract PKR 100 from profit"
                         >
                           -100
@@ -363,10 +366,7 @@ export default function POS() {
                             min="0"
                             className="w-28 pl-9 pr-2 py-1 text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 bg-white dark:bg-[#0f141c] border border-gray-300 dark:border-white/20 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand text-right"
                             value={salePrice}
-                            onChange={(e) => {
-                              const val = e.target.value === '' ? 0 : Number(e.target.value)
-                              updateCartSalePrice(ci.id, val)
-                            }}
+                            onChange={(e) => updateCartSalePrice(ci.id, e.target.value)}
                           />
                         </div>
                       </div>
@@ -446,10 +446,7 @@ export default function POS() {
               const dateIso = now.toISOString()
               const genBillNo = `B-${dateIso.slice(0,10).replace(/-/g,'')}-${String(Date.now()).slice(-3)}`
               const subtotal = posCart.reduce((a,b)=>{
-                const purchasePrice = Number(b.purchasePrice || 0)
-                const profit = Number(b.profit || 0)
-                const salePrice = purchasePrice + profit
-                return a + salePrice * b.qty
+                return a + getCartSalePrice(b) * b.qty
               }, 0)
               const billDisc = Number(discount||0) + Number(extraDiscount||0)
               const taxedBase = Math.max(subtotal - billDisc, 0)
@@ -466,9 +463,7 @@ export default function POS() {
                   assigned = inv.imeis.slice(0, qty)
                   inv.imeis = inv.imeis.slice(qty)
                 }
-                const purchasePrice = Number(ci.purchasePrice || 0)
-                const profit = Number(ci.profit || 0)
-                const salePrice = purchasePrice + profit
+                const salePrice = getCartSalePrice(ci)
                 return { ...ci, imeis: assigned, price: salePrice }
               })
               // Persist sale and deduct stock using our assigned IMEIs

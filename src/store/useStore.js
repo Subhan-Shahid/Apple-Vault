@@ -323,7 +323,7 @@ const useStore = create(persist((set, get) => ({
     const qty = Math.min((existing?.qty || 0) + 1, stock)
     const next = existing
       ? state.posCart.map(ci => ci.id === itemId ? { ...ci, qty } : ci)
-      : [...state.posCart, { id: itemId, name, purchasePrice, profit: 0, qty: 1 }]
+      : [...state.posCart, { id: itemId, name, purchasePrice, salePrice: purchasePrice, profit: 0, qty: 1 }]
     return { posCart: next }
   }),
   incrementQty: (itemId) => set((state) => {
@@ -336,14 +336,21 @@ const useStore = create(persist((set, get) => ({
   removeFromCart: (itemId) => set((state) => ({ posCart: state.posCart.filter(ci => ci.id !== itemId) })),
   clearCart: () => set({ posCart: [] }),
   updateCartProfit: (itemId, profit) => set((state) => ({
-    posCart: state.posCart.map(ci => ci.id === itemId ? { ...ci, profit: Number(profit || 0) } : ci)
+    posCart: state.posCart.map(ci => {
+      if (ci.id !== itemId) return ci
+      const purchasePrice = Number(ci.purchasePrice || 0)
+      const salePrice = Math.max(0, purchasePrice + Number(profit || 0))
+      return { ...ci, salePrice, profit: salePrice - purchasePrice }
+    })
   })),
   updateCartSalePrice: (itemId, salePrice) => set((state) => ({
     posCart: state.posCart.map(ci => {
       if (ci.id !== itemId) return ci
       const purchasePrice = Number(ci.purchasePrice || 0)
-      const profit = Math.max(0, Number(salePrice || 0) - purchasePrice)
-      return { ...ci, profit }
+      if (salePrice === '') return { ...ci, salePrice }
+      const parsedSalePrice = Number(salePrice)
+      const normalizedSalePrice = Number.isFinite(parsedSalePrice) ? Math.max(0, parsedSalePrice) : 0
+      return { ...ci, salePrice: normalizedSalePrice, profit: normalizedSalePrice - purchasePrice }
     })
   })),
 
